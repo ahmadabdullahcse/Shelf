@@ -51,7 +51,3 @@ fun GreetingPreview() {
         Greeting("Abdullah")
     }
 }
-
-fun formatDuration(minutes: Int): String {
-    return "${minutes/60}h ${minutes%60}m"
-}
