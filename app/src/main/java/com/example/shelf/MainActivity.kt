@@ -33,7 +33,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = """
+        0 min = ${formatDuration(0)}
+        60 min = ${formatDuration(60)}
+        75 min = ${formatDuration(75)}
+        120 min = ${formatDuration(120)}
+        711 min = ${formatDuration(711)}
+        """.trimIndent(),
         modifier = modifier
     )
 }
