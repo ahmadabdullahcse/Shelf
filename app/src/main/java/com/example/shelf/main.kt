@@ -4,7 +4,7 @@ fun main()
 {
     var minutes: Int
     minutes = string2Int(readln())
-    println(formatDuration(minutes))
+    if(minutes!=-1) println(formatDuration(minutes))
 }
 
 fun formatDuration(minutes: Int): String {
@@ -14,10 +14,21 @@ fun formatDuration(minutes: Int): String {
 fun string2Int(str: String): Int {
     if(str.isNullOrEmpty())
     {
-        println("String is nill or empty")
-        return 0
+        println("String is null or empty")
+        return -1
     };
-    val res = str.toInt()
-    if(res<0) return 0;
-    return res
+    var res: Int = 0
+    try {
+        res = str.toInt()
+        if(res<0) {
+            println("Please input a number greater or equal 0")
+            return -1;
+        }
+        return res
+    }
+    catch(e: Exception)
+    {
+        println("Please input a number")
+        return -1
+    }
 }
