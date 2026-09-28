@@ -1,5 +1,7 @@
 package com.example.shelf
 
+import android.health.connect.datatypes.units.Percentage
+
 class Book (
     val title: String,
     val page: Int
@@ -11,9 +13,21 @@ fun main()
     books.forEach {
         println(it.title+" has "+it.page+" pages.")
     }
-    longestThree(books)
-    totalPage(books)
-    createGroups(books)
+    println("My status of "+books[0].title+" book is "+progress(15)+".")
+    println("My status of "+books[1].title+" book is "+progress(95)+".")
+    println("My status of "+books[2].title+" book is "+progress(0)+".")
+    println("My status of "+books[3].title+" book is "+progress(100)+".")
+    println("My status of "+books[4].title+" book is "+progress(-1)+".")
+    println("My status of "+books[5].title+" book is "+progress(100005)+".")
+}
+
+fun progress(percentage: Int): String {
+    return when(percentage){
+        0 -> "Untouched"
+        in 1..99 -> "In progress"
+        100 -> "Finished"
+        else -> "Invalid percentage"
+    }
 }
 
 fun init(): List<Book> {
