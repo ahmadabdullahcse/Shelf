@@ -1,32 +1,98 @@
 package com.example.shelf
 
-import android.health.connect.datatypes.units.Percentage
-
 class Book (
-    val title: String,
-    val page: Int
+    var title: String,
+    var page: Int
 )
+
+val books = mutableListOf<Book>()
 
 fun main()
 {
-    val books = init()
-    books.forEach {
-        println(it.title+" has "+it.page+" pages.")
+    while(true)
+    {
+        println("Choose an option:")
+        println("1. Add a book")
+        println("2. List all books")
+        println("3. Update a book")
+        println("4. Delete a book")
+        println("5. Exit")
+        val x = string2Int(readln())
+        when(x)
+        {
+            1 -> addBook()
+            2 -> listBooks()
+            3 -> updateBook()
+            4 -> deleteBook()
+            5 -> break
+            else -> println("Choose a correct option")
+        }
     }
-    println("My status of "+books[0].title+" book is "+progress(15)+".")
-    println("My status of "+books[1].title+" book is "+progress(95)+".")
-    println("My status of "+books[2].title+" book is "+progress(0)+".")
-    println("My status of "+books[3].title+" book is "+progress(100)+".")
-    println("My status of "+books[4].title+" book is "+progress(-1)+".")
-    println("My status of "+books[5].title+" book is "+progress(100005)+".")
+
 }
 
-fun progress(percentage: Int): String {
-    return when(percentage){
-        0 -> "Untouched"
-        in 1..99 -> "In progress"
-        100 -> "Finished"
-        else -> "Invalid percentage"
+fun addBook() {
+    println("Enter book name:")
+    var bookName = readln()
+    while(bookName.isBlank() || bookName.length>100)
+    {
+        println("Book name can't be blank or more than 100 char. Please enter valid book name:")
+        bookName = readln()
+    }
+    println("Enter page number:")
+    val pageNumber = string2Int(readln())
+    books.add(Book(bookName, pageNumber))
+    println("Book added successfully")
+}
+fun listBooks() {
+    var sl:Int = 0
+    sl = sl.inc()
+    books.forEach {
+        println(sl.toString()+". "+it.title+" has "+it.page+" pages.")
+    }
+}
+
+fun updateBook() {
+    if(books.isEmpty()) {
+        println("Please add a book first")
+        return
+    }
+    println("Enter the number of book you want to update")
+    listBooks()
+    when(val index = string2Int(readln()))
+    {
+        in 1..books.size -> {
+            println("Enter updated name:")
+            var newBookName = readln()
+            while(newBookName.isBlank() || newBookName.length>100)
+            {
+                println("Book name can't be blank or more than 100 char. Please enter valid book name:")
+                newBookName = readln()
+            }
+            println("Enter updated page number:")
+            val newPageNumber = string2Int(readln())
+            books[index-1].title = newBookName
+            if(newPageNumber!=-1) books[index-1].page = newPageNumber
+            println("Book updated successfully")
+        }
+        else -> println("Failed to update book due to invalid index!")
+    }
+}
+
+fun deleteBook() {
+    if(books.isEmpty()) {
+        println("Please add a book first")
+        return
+    }
+    println("Enter the number of book you want to delete")
+    listBooks()
+    when(val index = string2Int(readln()))
+    {
+        in 1..books.size -> {
+            books.removeAt(index - 1)
+            println("Book removed successfully")
+        }
+        else -> println("Failed to delete book due to invalid index!")
     }
 }
 
@@ -102,21 +168,21 @@ fun formatDuration(minutes: Int): String {
 fun string2Int(str: String): Int {
     if(str.isNullOrEmpty())
     {
-        println("String is null or empty")
+        //println("String is null or empty")
         return -1
     };
     var res: Int = 0
     try {
         res = str.toInt()
         if(res<0) {
-            println("Please input a number greater or equal 0")
+            //println("Please input a number greater or equal 0")
             return -1;
         }
         return res
     }
     catch(e: Exception)
     {
-        println("Please input a number")
+       // println("Please input a number")
         return -1
     }
 }
