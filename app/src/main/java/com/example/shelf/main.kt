@@ -34,9 +34,9 @@ fun main()
 fun addBook() {
     println("Enter book name:")
     var bookName = readln()
-    while(bookName.isEmpty())
+    while(bookName.isBlank() || bookName.length>100)
     {
-        println("Book name can't be empty. Please enter valid book name:")
+        println("Book name can't be blank or more than 100 char. Please enter valid book name:")
         bookName = readln()
     }
     println("Enter page number:")
@@ -64,9 +64,9 @@ fun updateBook() {
         in 1..books.size -> {
             println("Enter updated name:")
             var newBookName = readln()
-            while(newBookName.isEmpty())
+            while(newBookName.isBlank() || newBookName.length>100)
             {
-                println("Book name can't be empty. Please enter valid book name:")
+                println("Book name can't be blank or more than 100 char. Please enter valid book name:")
                 newBookName = readln()
             }
             println("Enter updated page number:")
