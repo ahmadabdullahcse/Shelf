@@ -33,7 +33,12 @@ fun main()
 
 fun addBook() {
     println("Enter book name:")
-    val bookName = readln()
+    var bookName = readln()
+    while(bookName.isEmpty())
+    {
+        println("Book name can't be empty. Please enter valid book name:")
+        bookName = readln()
+    }
     println("Enter page number:")
     val pageNumber = string2Int(readln())
     books.add(Book(bookName, pageNumber))
@@ -41,8 +46,9 @@ fun addBook() {
 }
 fun listBooks() {
     var sl:Int = 0
+    sl = sl.inc()
     books.forEach {
-        println(it.title+" has "+it.page+" pages.")
+        println(sl.toString()+". "+it.title+" has "+it.page+" pages.")
     }
 }
 
@@ -57,7 +63,12 @@ fun updateBook() {
     {
         in 1..books.size -> {
             println("Enter updated name:")
-            val newBookName = readln()
+            var newBookName = readln()
+            while(newBookName.isEmpty())
+            {
+                println("Book name can't be empty. Please enter valid book name:")
+                newBookName = readln()
+            }
             println("Enter updated page number:")
             val newPageNumber = string2Int(readln())
             books[index-1].title = newBookName
