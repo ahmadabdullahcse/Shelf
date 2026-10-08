@@ -1,11 +1,11 @@
 package com.example.shelf
 
-class Book (
-    var title: String,
-    var page: Int
+data class Book (
+    val title: String,
+    val page: Int
 )
 
-val books = mutableListOf<Book>()
+var books = listOf<Book>()
 
 fun main()
 {
@@ -41,13 +41,13 @@ fun addBook() {
     }
     println("Enter page number:")
     val pageNumber = string2Int(readln())
-    books.add(Book(bookName, pageNumber))
+    books = books + Book(bookName, pageNumber)
     println("Book added successfully")
 }
 fun listBooks() {
     var sl:Int = 0
-    sl = sl.inc()
     books.forEach {
+        sl++
         println(sl.toString()+". "+it.title+" has "+it.page+" pages.")
     }
 }
@@ -71,8 +71,20 @@ fun updateBook() {
             }
             println("Enter updated page number:")
             val newPageNumber = string2Int(readln())
-            books[index-1].title = newBookName
-            if(newPageNumber!=-1) books[index-1].page = newPageNumber
+            books = books.map {
+                if(it.title==books[index-1].title)
+                {
+                    if(newPageNumber==-1){
+                        it.copy(title = newBookName)
+                    }
+                    else {
+                        it.copy(title = newBookName, page = newPageNumber)
+                    }
+                }
+                else {
+                    it
+                }
+            }
             println("Book updated successfully")
         }
         else -> println("Failed to update book due to invalid index!")
@@ -89,7 +101,9 @@ fun deleteBook() {
     when(val index = string2Int(readln()))
     {
         in 1..books.size -> {
-            books.removeAt(index - 1)
+            books = books.filter {
+                it.title != books[index-1].title
+            }
             println("Book removed successfully")
         }
         else -> println("Failed to delete book due to invalid index!")
