@@ -1,16 +1,14 @@
 package com.example.shelf
 
-class Book (
-    var title: String,
-    var page: Int
+data class Book (
+    val title: String,
+    val page: Int
 )
 
-val books = mutableListOf<Book>()
+var books = mutableListOf<Book>()
 
-fun main()
-{
-    while(true)
-    {
+fun main() {
+    while(true) {
         println("Choose an option:")
         println("1. Add a book")
         println("2. List all books")
@@ -18,8 +16,7 @@ fun main()
         println("4. Delete a book")
         println("5. Exit")
         val x = string2Int(readln())
-        when(x)
-        {
+        when(x) {
             1 -> addBook()
             2 -> listBooks()
             3 -> updateBook()
@@ -34,8 +31,7 @@ fun main()
 fun addBook() {
     println("Enter book name:")
     var bookName = readln()
-    while(bookName.isBlank() || bookName.length>100)
-    {
+    while(bookName.isBlank() || bookName.length>100) {
         println("Book name can't be blank or more than 100 char. Please enter valid book name:")
         bookName = readln()
     }
@@ -45,9 +41,12 @@ fun addBook() {
     println("Book added successfully")
 }
 fun listBooks() {
+    if(books.isEmpty()) {
+        println("There is no book to show :-(")
+    }
     var sl:Int = 0
-    sl = sl.inc()
     books.forEach {
+        sl++
         println(sl.toString()+". "+it.title+" has "+it.page+" pages.")
     }
 }
@@ -59,8 +58,7 @@ fun updateBook() {
     }
     println("Enter the number of book you want to update")
     listBooks()
-    when(val index = string2Int(readln()))
-    {
+    when(val index = string2Int(readln())) {
         in 1..books.size -> {
             println("Enter updated name:")
             var newBookName = readln()
@@ -70,9 +68,9 @@ fun updateBook() {
                 newBookName = readln()
             }
             println("Enter updated page number:")
-            val newPageNumber = string2Int(readln())
-            books[index-1].title = newBookName
-            if(newPageNumber!=-1) books[index-1].page = newPageNumber
+            var newPageNumber = string2Int(readln())
+            if(newPageNumber==-1) newPageNumber = books[index-1].page
+            books[index-1] = books[index-1].copy(title = newBookName, page = newPageNumber)
             println("Book updated successfully")
         }
         else -> println("Failed to update book due to invalid index!")
@@ -89,7 +87,7 @@ fun deleteBook() {
     when(val index = string2Int(readln()))
     {
         in 1..books.size -> {
-            books.removeAt(index - 1)
+            books.removeAt(index-1)
             println("Book removed successfully")
         }
         else -> println("Failed to delete book due to invalid index!")
