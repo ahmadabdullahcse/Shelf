@@ -5,12 +5,10 @@ data class Book (
     val page: Int
 )
 
-var books = listOf<Book>()
+var books = mutableListOf<Book>()
 
-fun main()
-{
-    while(true)
-    {
+fun main() {
+    while(true) {
         println("Choose an option:")
         println("1. Add a book")
         println("2. List all books")
@@ -18,8 +16,7 @@ fun main()
         println("4. Delete a book")
         println("5. Exit")
         val x = string2Int(readln())
-        when(x)
-        {
+        when(x) {
             1 -> addBook()
             2 -> listBooks()
             3 -> updateBook()
@@ -34,17 +31,19 @@ fun main()
 fun addBook() {
     println("Enter book name:")
     var bookName = readln()
-    while(bookName.isBlank() || bookName.length>100)
-    {
+    while(bookName.isBlank() || bookName.length>100) {
         println("Book name can't be blank or more than 100 char. Please enter valid book name:")
         bookName = readln()
     }
     println("Enter page number:")
     val pageNumber = string2Int(readln())
-    books = books + Book(bookName, pageNumber)
+    books.add(Book(bookName, pageNumber))
     println("Book added successfully")
 }
 fun listBooks() {
+    if(books.isEmpty()) {
+        println("There is no book to show :-(")
+    }
     var sl:Int = 0
     books.forEach {
         sl++
@@ -59,8 +58,7 @@ fun updateBook() {
     }
     println("Enter the number of book you want to update")
     listBooks()
-    when(val index = string2Int(readln()))
-    {
+    when(val index = string2Int(readln())) {
         in 1..books.size -> {
             println("Enter updated name:")
             var newBookName = readln()
@@ -70,21 +68,9 @@ fun updateBook() {
                 newBookName = readln()
             }
             println("Enter updated page number:")
-            val newPageNumber = string2Int(readln())
-            books = books.map {
-                if(it.title==books[index-1].title)
-                {
-                    if(newPageNumber==-1){
-                        it.copy(title = newBookName)
-                    }
-                    else {
-                        it.copy(title = newBookName, page = newPageNumber)
-                    }
-                }
-                else {
-                    it
-                }
-            }
+            var newPageNumber = string2Int(readln())
+            if(newPageNumber==-1) newPageNumber = books[index-1].page
+            books[index-1] = books[index-1].copy(title = newBookName, page = newPageNumber)
             println("Book updated successfully")
         }
         else -> println("Failed to update book due to invalid index!")
@@ -101,9 +87,7 @@ fun deleteBook() {
     when(val index = string2Int(readln()))
     {
         in 1..books.size -> {
-            books = books.filter {
-                it.title != books[index-1].title
-            }
+            books.removeAt(index-1)
             println("Book removed successfully")
         }
         else -> println("Failed to delete book due to invalid index!")
