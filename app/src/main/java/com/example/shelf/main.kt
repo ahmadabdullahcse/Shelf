@@ -3,7 +3,8 @@ package com.example.shelf
 enum class ReadingStatus {
     WANT_TO_READ,
     IN_PROGRESS,
-    FINISHED
+    FINISHED,
+    NOT_SET
 }
 
 enum class Error {
@@ -69,9 +70,10 @@ fun addBook() {
     """.trimMargin())
     val status = string2Int(readln())
     val readingStatus = when(status) {
+        1 -> ReadingStatus.WANT_TO_READ
         2 -> ReadingStatus.IN_PROGRESS
         3 -> ReadingStatus.FINISHED
-        else -> ReadingStatus.WANT_TO_READ
+        else -> ReadingStatus.NOT_SET
     }
     books.add(Book(bookName, pageNumber, readingStatus))
     showSaveResult(SaveStatus.Success)
@@ -132,9 +134,14 @@ fun updateStatus() {
             """.trimMargin())
             val status = string2Int(readln())
             val readingStatus = when(status) {
+                1 -> ReadingStatus.WANT_TO_READ
                 2 -> ReadingStatus.IN_PROGRESS
                 3 -> ReadingStatus.FINISHED
-                else -> ReadingStatus.WANT_TO_READ
+                else -> ReadingStatus.NOT_SET
+            }
+            if(readingStatus== ReadingStatus.NOT_SET) {
+                showSaveResult(SaveStatus.Failed(Error.INVALID_INPUT))
+                return
             }
             books[index-1] = books[index-1].copy(status=readingStatus)
             showSaveResult(SaveStatus.Success)
