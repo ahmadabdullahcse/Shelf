@@ -1,10 +1,27 @@
 package com.example.shelf
 
+enum class ReadingStatus {
+    WANT_TO_READ,
+    IN_PROGRESS,
+    FINISHED,
+    NOT_SET
+}
+
+enum class Error {
+    INVALID_INPUT,
+    INVALID_INDEX,
+    EMPTY_LIST
+}
 data class Book (
     val title: String,
-    val page: Int
+    val page: Int,
+    val status: ReadingStatus
 )
 
+sealed class SaveStatus {
+    data object Success: SaveStatus()
+    data class Failed(val error: Error): SaveStatus()
+}
 var books = mutableListOf<Book>()
 
 fun main() {
@@ -13,19 +30,28 @@ fun main() {
         println("1. Add a book")
         println("2. List all books")
         println("3. Update a book")
-        println("4. Delete a book")
-        println("5. Exit")
+        println("4. Update status of a book")
+        println("5. Delete a book")
+        println("6. Exit")
         val x = string2Int(readln())
         when(x) {
             1 -> addBook()
             2 -> listBooks()
             3 -> updateBook()
-            4 -> deleteBook()
-            5 -> break
+            4 -> updateStatus()
+            5 -> deleteBook()
+            6 -> break
             else -> println("Choose a correct option")
         }
     }
 
+}
+
+fun showSaveResult(status: SaveStatus) {
+    when(status) {
+        is SaveStatus.Success -> println("Saved Successfully")
+        is SaveStatus.Failed -> println("Failed to save for ${status.error}")
+    }
 }
 
 fun addBook() {
@@ -37,8 +63,23 @@ fun addBook() {
     }
     println("Enter page number:")
     val pageNumber = string2Int(readln())
-    books.add(Book(bookName, pageNumber))
-    println("Book added successfully")
+    println("""Enter progress:
+        1. Want to read
+        2. In Progress
+        3. Finished
+    """.trimMargin())
+    val status = string2Int(readln())
+    val readingStatus = when(status) {
+        1 -> ReadingStatus.WANT_TO_READ
+        2 -> ReadingStatus.IN_PROGRESS
+        3 -> ReadingStatus.FINISHED
+        else -> ReadingStatus.NOT_SET
+    }
+    books.add(Book(bookName, pageNumber, readingStatus))
+    showSaveResult(SaveStatus.Success)
+    if(status !in 1..3){
+        println("Reading status set \"Want to read\" as default.")
+    }
 }
 fun listBooks() {
     if(books.isEmpty()) {
@@ -47,13 +88,13 @@ fun listBooks() {
     var sl:Int = 0
     books.forEach {
         sl++
-        println(sl.toString()+". "+it.title+" has "+it.page+" pages.")
+        println(sl.toString()+". "+it.title+" has "+it.page+" pages and reading status is "+it.status+".")
     }
 }
 
 fun updateBook() {
     if(books.isEmpty()) {
-        println("Please add a book first")
+        showSaveResult(SaveStatus.Failed(Error.EMPTY_LIST))
         return
     }
     println("Enter the number of book you want to update")
@@ -71,15 +112,47 @@ fun updateBook() {
             var newPageNumber = string2Int(readln())
             if(newPageNumber==-1) newPageNumber = books[index-1].page
             books[index-1] = books[index-1].copy(title = newBookName, page = newPageNumber)
-            println("Book updated successfully")
+            showSaveResult(SaveStatus.Success)
         }
-        else -> println("Failed to update book due to invalid index!")
+        else -> showSaveResult(SaveStatus.Failed(Error.INVALID_INDEX))
+    }
+}
+
+fun updateStatus() {
+    if(books.isEmpty()) {
+        showSaveResult(SaveStatus.Failed(Error.EMPTY_LIST))
+        return
+    }
+    println("Enter the number of book you want to update status")
+    listBooks()
+    when(val index = string2Int(readln())) {
+        in 1..books.size -> {
+            println("""Enter updated progress:
+                1. Want to read
+                2. In Progress
+                3. Finished
+            """.trimMargin())
+            val status = string2Int(readln())
+            val readingStatus = when(status) {
+                1 -> ReadingStatus.WANT_TO_READ
+                2 -> ReadingStatus.IN_PROGRESS
+                3 -> ReadingStatus.FINISHED
+                else -> ReadingStatus.NOT_SET
+            }
+            if(readingStatus== ReadingStatus.NOT_SET) {
+                showSaveResult(SaveStatus.Failed(Error.INVALID_INPUT))
+                return
+            }
+            books[index-1] = books[index-1].copy(status=readingStatus)
+            showSaveResult(SaveStatus.Success)
+        }
+        else -> showSaveResult(SaveStatus.Failed(Error.INVALID_INDEX))
     }
 }
 
 fun deleteBook() {
     if(books.isEmpty()) {
-        println("Please add a book first")
+        showSaveResult(SaveStatus.Failed(Error.EMPTY_LIST))
         return
     }
     println("Enter the number of book you want to delete")
@@ -88,29 +161,29 @@ fun deleteBook() {
     {
         in 1..books.size -> {
             books.removeAt(index-1)
-            println("Book removed successfully")
+            showSaveResult(SaveStatus.Success)
         }
-        else -> println("Failed to delete book due to invalid index!")
+        else -> showSaveResult(SaveStatus.Failed(Error.INVALID_INPUT))
     }
 }
 
 fun init(): List<Book> {
     val books = listOf(
-        Book("The Thirty-Nine Steps", 138),
-        Book("The Prime of Miss Jean Brodie", 150),
-        Book("A Single Man", 152),
-        Book("Murphy", 158) ,
-        Book("A Clockwork Orange", 160),
-        Book("Strange Case of Dr Jekyll and Mr Hyde",161),
-        Book("The Alchemist", 167),
-        Book("Mrs Dalloway", 172),
-        Book("The Hitchhiker’s Guide To The Galaxy",  180),
-        Book("The Great Gatsby", 184),
-        Book("Amongst Women", 184),
-        Book("The Wind In The Willows", 190),
-        Book("The End Of The Affair", 191),
-        Book("Party Going", 192),
-        Book("The Maltese Falcon", 201)
+        Book("The Thirty-Nine Steps", 138, ReadingStatus.WANT_TO_READ),
+        Book("The Prime of Miss Jean Brodie", 150, ReadingStatus.FINISHED),
+        Book("A Single Man", 152, ReadingStatus.WANT_TO_READ),
+        Book("Murphy", 158, ReadingStatus.IN_PROGRESS),
+        Book("A Clockwork Orange", 160, ReadingStatus.WANT_TO_READ),
+        Book("Strange Case of Dr Jekyll and Mr Hyde",161, ReadingStatus.WANT_TO_READ),
+        Book("The Alchemist", 167, ReadingStatus.IN_PROGRESS),
+        Book("Mrs Dalloway", 172, ReadingStatus.WANT_TO_READ),
+        Book("The Hitchhiker’s Guide To The Galaxy",  180, ReadingStatus.WANT_TO_READ),
+        Book("The Great Gatsby", 184, ReadingStatus.IN_PROGRESS),
+        Book("Amongst Women", 184, ReadingStatus.WANT_TO_READ),
+        Book("The Wind In The Willows", 190, ReadingStatus.WANT_TO_READ),
+        Book("The End Of The Affair", 191, ReadingStatus.FINISHED),
+        Book("Party Going", 192, ReadingStatus.FINISHED),
+        Book("The Maltese Falcon", 201, ReadingStatus.WANT_TO_READ)
     )
     return books
 }
